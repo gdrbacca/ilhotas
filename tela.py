@@ -8,6 +8,14 @@ import main
 import utils
 
 class Application:
+
+    thresh1 = 240
+    thresh2 = 160
+    thresh3 = 150
+    filename = ""
+    primeiroThresh = False
+    result1 = []
+
     def __init__(self, master=None):
         self.widget1 = Frame(master)
         self.widget1.pack(fill=BOTH, pady=15)
@@ -32,27 +40,152 @@ class Application:
         self.widget3 = Frame(self.widget2)
         self.widget3.grid(row=0, column=1, padx=10)
         self.a = Button(self.widget3)
-        self.a["text"] = "Abrir imagem"
+        self.a["text"] = "Primeira limiar"
         self.a["font"] = ("Verdana", "10")
-        self.a["width"] = 10
-        self.a.grid(row=3, column=1, columnspan=2)
-        self.info1Label = Label(self.widget3)
-        self.info1Label["text"] = "info1: "
-        self.info1Label["width"] = 10
-        self.info1Label.grid(row=0, column=0)
-        self.info1 = Label(self.widget3)
-        self.info1["text"] = "o"
-        self.info1["width"] = 15
-        self.info1.grid(row=0, column=1)
-        self.info2Label = Label(self.widget3)
-        self.info2Label["text"] = "info2: "
-        self.info2Label["width"] = 10
-        self.info2Label.grid(row=1, column=0)
-        self.info2 = Label(self.widget3)
-        self.info2["text"] = "e"
-        self.info2["width"] = 15
-        self.info2.grid(row=1, column=1)
+        self.a["width"] = 12
+        self.a["command"] = self.processamento
+        self.a.grid(row=3, column=0, columnspan=3)
 
+        self.buttonThresh1a = Button(self.widget3)
+        self.buttonThresh1a["text"] = "+"
+        self.buttonThresh1a["width"] = 5
+        self.buttonThresh1a["command"] = self.maisThresh1
+        self.buttonThresh1a.grid(row=0, column=0)
+        self.info1 = Label(self.widget3)
+        self.info1["text"] = self.thresh1
+        self.info1["width"] = 10
+        self.info1.grid(row=0, column=1)
+        self.buttonThresh1b = Button(self.widget3)
+        self.buttonThresh1b["text"] = "-"
+        self.buttonThresh1b["width"] = 5
+        self.buttonThresh1b["command"] = self.diminuiThresh1
+        self.buttonThresh1b.grid(row=0, column=2)
+        self.buttonThresh2a = Button(self.widget3)
+        self.buttonThresh2a["text"] = "+"
+        self.buttonThresh2a["width"] = 5
+        self.buttonThresh2a["command"] = self.maisThresh2
+        self.buttonThresh2a.grid(row=1, column=0)
+        self.info2 = Label(self.widget3)
+        self.info2["text"] = self.thresh2
+        self.info2["width"] = 10
+        self.info2.grid(row=1, column=1)
+        self.buttonThresh2b = Button(self.widget3)
+        self.buttonThresh2b["text"] = "-"
+        self.buttonThresh2b["width"] = 5
+        self.buttonThresh2b["command"] = self.diminuiThresh2
+        self.buttonThresh2b.grid(row=1, column=2)
+
+        self.espaco = Label(self.widget3)
+        self.espaco.grid(row=4, column=1)
+
+        self.b = Button(self.widget3)
+        self.b["text"] = "Segunda limiar"
+        self.b["font"] = ("Verdana", "10")
+        self.b["width"] = 12
+        self.b['state'] = 'disabled'
+        self.b["command"] = self.processamento2
+        self.b.grid(row=6, column=0, columnspan=3)
+        self.buttonThresh3a = Button(self.widget3)
+        self.buttonThresh3a["text"] = "+"
+        self.buttonThresh3a["width"] = 5
+        self.buttonThresh3a["command"] = self.maisThresh3
+        self.buttonThresh3a["state"] = 'disabled'
+        self.buttonThresh3a.grid(row=5, column=0)
+        self.info3 = Label(self.widget3)
+        self.info3["text"] = self.thresh3
+        self.info3["width"] = 10
+        self.info3.grid(row=5, column=1)
+        self.buttonThresh3b = Button(self.widget3)
+        self.buttonThresh3b["text"] = "-"
+        self.buttonThresh3b["width"] = 5
+        self.buttonThresh3b["command"] = self.diminuiThresh3
+        self.buttonThresh3b["state"] = 'disabled'
+        self.buttonThresh3b.grid(row=5, column=2)
+
+        self.areaIlhotaText = Label(self.widget3)
+        self.areaIlhotaText["text"] = 'Área: '
+        self.areaIlhotaText["width"] = 10
+        self.areaIlhotaText.grid(row=7, column=0, pady=20)
+        self.areaIlhota = Label(self.widget3)
+        self.areaIlhota["text"] = 'alo'
+        self.areaIlhota["width"] = 10
+        self.areaIlhota.grid(row=7, column=1, columnspan=2, pady=20)
+    def diminuiThresh1(self):
+        self.thresh1 -= 5
+        self.info1["text"] = self.thresh1
+
+    def maisThresh1(self):
+        self.thresh1 += 5
+        self.info1["text"] = self.thresh1
+
+    def maisThresh2(self):
+        self.thresh2 += 5
+        self.info2["text"] = self.thresh2
+
+    def diminuiThresh2(self):
+        self.thresh2 -= 5
+        self.info2["text"] = self.thresh2
+        print(self.thresh2)
+
+    def maisThresh3(self):
+        self.thresh3 += 5
+        self.info3["text"] = self.thresh3
+
+    def diminuiThresh3(self):
+        self.thresh3 -= 5
+        self.info3["text"] = self.thresh3
+
+    def processamento(self):
+        m = main.Main()
+        if self.filename != "":
+            img = m.leImagem(self.filename)
+            image = Image.fromarray(img)
+            image = ImageTk.PhotoImage(image)
+            self.caminho["text"] = "Carregando..."
+            root.update()
+            self.img.configure(image=image)
+            self.img.image = image
+            if self.filename == "" or self.caminho["text"] == "Carregando...":
+                root.update()
+            img = m.processaImagem(self.filename, [], self.thresh1, self.thresh2) #cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+            self.caminho["text"] = self.filename
+            self.b['state'] = 'normal'
+            self.buttonThresh3a['state'] = 'normal'
+            self.buttonThresh3b['state'] = 'normal'
+            self.primeiroThresh = True
+            #img = u.processa2(filename)
+            if img != []:
+                print(img.shape[0], ' ', img.shape[1])
+                img = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
+                image = Image.fromarray(img)
+                image = ImageTk.PhotoImage(image)
+                self.img.configure(image=image)
+                self.img.image = image
+                self.result1 = img
+                print("dsdsdsdsds")
+
+    def processamento2(self):
+        if self.primeiroThresh == True:
+            self.buttonThresh1a['state'] = 'disabled'
+            self.buttonThresh1b['state'] = 'disabled'
+            self.buttonThresh2a['state'] = 'disabled'
+            self.buttonThresh2b['state'] = 'disabled'
+            self.a['state'] = 'disabled'
+            u = utils.Segment()
+            self.caminho['text'] = "Carregando..."
+            root.update()
+            area, contours, cont, image = u.processaFinal(self.result1, self.thresh3)
+            size = 128, 128
+            self.areaIlhota["text"] = area
+            self.caminho['text'] = self.filename
+            root.update()
+            image = cv2.resize(image, dsize=(550, 500), interpolation=cv2.INTER_CUBIC)
+            imagem = Image.fromarray(image)
+            imagem = ImageTk.PhotoImage(imagem)
+            cv2.imwrite('results/im6.jpg', image)
+            self.img.configure(image=imagem)
+            self.img.image = imagem
+            print('proc2')
 
     def abrirImagem(self):
         #filename = tkfilebrowser.askopenfilename()
@@ -63,23 +196,11 @@ class Application:
         #img = imutils.resize(img, height=500)
         m = main.Main()
         u = utils.Segment()
-        filename = tkfilebrowser.askopenfilename()
-        if filename != "":
-            img = m.leImagem(filename)
-            image = Image.fromarray(img)
-            image = ImageTk.PhotoImage(image)
-            self.caminho["text"] = filename
-            self.img.configure(image=image)
-            self.img.image = image
-            root.update()
-            img = m.processaImagem(filename, []) #cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
-            if img != []:
-                print(img.shape[0], ' ', img.shape[1])
-                image = Image.fromarray(img)
-                image = ImageTk.PhotoImage(image)
-                self.img.configure(image=image)
-                self.img.image = image
-                print("dsdsdsdsds")
+        self.filename = tkfilebrowser.askopenfilename()
+        self.a['state'] = 'normal'
+        self.b['state'] = 'disabled'
+        if self.filename != "":
+            self.processamento()
 
     def mudarTexto(self):
         if self.msg["text"] == "Primeiro widget":

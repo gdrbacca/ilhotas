@@ -27,7 +27,41 @@ class Main:
         # apply gamma correction using the lookup table
         return cv2.LUT(image, table)
 
-    def processaImagem(self, caminho, imagemCarregada):
+    def medeScala(self, imagem):
+        img = imagem
+        h, w = img.shape[:2]
+        print(h, ' ', w)
+        # crop_img = img[y:y+h, x:x+w]
+        crop_img = img[h - 40:h, w - 90:w]
+        crop_img = cv2.cvtColor(crop_img, cv2.COLOR_BGR2GRAY, 1)
+        edges = cv2.Canny(crop_img, 100, 500, None, 3)
+        lines = cv2.HoughLinesP(edges, 1, np.pi / 180, 30, None, 20, 80)
+        xis = []
+        for line in lines:
+            x1, y1, x2, y2 = line[0]
+            if (x1 == x2) or (abs(x1 - x2) <= 4) or (abs(x2 - x1) <= 4):
+                print('x1: ', x1, ', y1: ', y1, ', x2: ', x2, ', y2: ', y2)
+                cv2.line(crop_img, (x1, y1), (x2, y2), (255, 0, 0), 3)
+                xis.append(x1)
+
+        maior = xis[0]
+        menor = xis[0]
+
+        for i in xis:
+            if i > maior:
+                maior = i
+
+        for i in xis:
+            if i < menor:
+                menor = i
+
+        print('menor: ', menor)
+        print('maior: ', maior)
+        subtracao = maior - menor
+        area = subtracao * subtracao
+        return area
+
+    def processaImagem(self, caminho, imagemCarregada, threshValue1, threshValue2):
         im1 = 'Acetato 50.JPG'
         im2 = 'Acetato 100.JPG'
         im3 = 'Butanol 50.JPG'
@@ -48,11 +82,13 @@ class Main:
         else:
             imagem = imutils.resize(imagem, height = 500)
 
-        imagem = self.adjust_gamma(imagem, 1.5)
+        area = self.medeScala(imagem)
+        print('area: ', area)
+        #imagem = self.adjust_gamma(imagem, 1.5)
         imagem = cv2.pyrMeanShiftFiltering(imagem, 15, 20)
 
         imgray = cv2.cvtColor(imagem, cv2.COLOR_BGR2HSV)
-        imgray = self.adjust_gamma(imgray, gamma=1.5)
+        #imgray = self.adjust_gamma(imgray, gamma=1.5)
 
         r, g, b = cv2.split(imagem)
         h,s,v = cv2.split(imgray)
@@ -60,8 +96,8 @@ class Main:
 
 
         invert1 = cv2.bitwise_not(h)
-        ret, thresh1 = cv2.threshold(cv2.equalizeHist(g), 240, 255, cv2.THRESH_BINARY)###################################
-        #ret, thresh1 = cv2.threshold(invert1, 225, 255, cv2.THRESH_BINARY)
+        ret, thresh1 = cv2.threshold(cv2.equalizeHist(g), threshValue1, 255, cv2.THRESH_BINARY)####240############################
+        #ret, thresh1 = cv2.threshold(invert1, 220, 255, cv2.THRESH_BINARY)
         cv2.imshow("dd1",  thresh1)
         height, width = imagem.shape[:2]
 
@@ -83,7 +119,7 @@ class Main:
         kernel2 = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (3,2))
         erode = cv2.erode(filter, kernel2, iterations=2)
         dilat = cv2.dilate(erode, kernel2, iterations=1)
-        ret, thresh1 = cv2.threshold(dilat, 180, 255, cv2.THRESH_BINARY) #####################################185-230
+        ret, thresh1 = cv2.threshold(dilat, threshValue2, 255, cv2.THRESH_BINARY) ##############170####################185-230
         cv2.imshow("shift1", dilat)
         kernel2 = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (2,2))
         erode = cv2.erode(thresh1, kernel2, iterations=6)
@@ -95,10 +131,9 @@ class Main:
         cv2.imshow("im", plot_image)
         dilat = cv2.cvtColor(dilat, cv2.COLOR_BGR2GRAY)
         im2, contours, hierarchy = cv2.findContours(dilat, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
-        contorno_maior = 0;
-        cont = 0;
+        contorno_maior = 0
+        cont = 0
         for i in range(0, len(contours)):
-            print(i,' : ',len(contours[i]))
             if cv2.contourArea(contours[i]) > contorno_maior:
                 contorno_maior = cv2.contourArea(contours[i])
                 cont = i
@@ -168,11 +203,10 @@ class Main:
         dilate = cv2.dilate(sub, kernel2, iterations=5)
         dilate = cv2.cvtColor(dilate, cv2.COLOR_BGR2GRAY, 1)
         im2, contours, hierarchy = cv2.findContours(dilate, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
-        contorno_maior = 0;
+        contorno_maior = 0
         cv2.imshow("ddd", dilate)
-        cont = 0;
+        cont = 0
         for i in range(0, len(contours)):
-            print(i,' : ',len(contours[i]))
             if cv2.contourArea(contours[i]) > contorno_maior:
                 contorno_maior = cv2.contourArea(contours[i])
                 cont = i
@@ -211,17 +245,16 @@ class Main:
 
             dst = cv2.bitwise_and(croped, croped, mask=mask)
             dst = imutils.resize(dst, width=666, height=500)
-            print('hull', hull[0:])
             self.contador = 1
             cv2.imshow('hull', dst)
             u = utils.Segment()
             #image = u.processaImagem(dst)
             #cv2.imshow('kmeans', image)
-            cv2.imwrite('hulls/23.jpg', dst)
-            u.segundoProcesso(dst)
+            #cv2.imwrite('hulls/23.jpg', dst)
+            #u.segundoProcesso(dst)
             self.contador = 1
             #imagem = self.processaImagem('', dst)
-            return imagem
+            return dst
         elif caminho == '':
             return imagem
         else:
