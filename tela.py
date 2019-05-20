@@ -13,8 +13,10 @@ class Application:
     thresh2 = 160
     thresh3 = 150
     filename = ""
+    areaEscala = 0
     primeiroThresh = False
     result1 = []
+    original = []
 
     def __init__(self, master=None):
         self.widget1 = Frame(master)
@@ -107,9 +109,18 @@ class Application:
         self.areaIlhotaText["width"] = 10
         self.areaIlhotaText.grid(row=7, column=0, pady=20)
         self.areaIlhota = Label(self.widget3)
-        self.areaIlhota["text"] = 'alo'
+        self.areaIlhota["text"] = ''
         self.areaIlhota["width"] = 10
-        self.areaIlhota.grid(row=7, column=1, columnspan=2, pady=20)
+        self.areaIlhota.grid(row=7, column=1, columnspan=3, pady=20)
+        self.circularidadeText = Label(self.widget3)
+        self.circularidadeText["text"] = 'Circular: '
+        self.circularidadeText["width"] = 10
+        self.circularidadeText.grid(row=8, column=0, pady=20)
+        self.circularidade = Label(self.widget3)
+        self.circularidade["text"] = ''
+        self.circularidade["width"] = 10
+        self.circularidade.grid(row=8, column=1, columnspan=3, pady=20)
+
     def diminuiThresh1(self):
         self.thresh1 -= 5
         self.info1["text"] = self.thresh1
@@ -147,7 +158,8 @@ class Application:
             self.img.image = image
             if self.filename == "" or self.caminho["text"] == "Carregando...":
                 root.update()
-            img = m.processaImagem(self.filename, [], self.thresh1, self.thresh2) #cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+            self.areaEscala, img = m.processaImagem(self.filename, [], self.thresh1, self.thresh2) #cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+            print('escala: ', self.areaEscala)
             self.caminho["text"] = self.filename
             self.b['state'] = 'normal'
             self.buttonThresh3a['state'] = 'normal'
@@ -174,9 +186,15 @@ class Application:
             u = utils.Segment()
             self.caminho['text'] = "Carregando..."
             root.update()
-            area, contours, cont, image = u.processaFinal(self.result1, self.thresh3)
+            circularidade, area, contours, cont, image = u.processaFinal(self.result1, self.thresh3)
             size = 128, 128
-            self.areaIlhota["text"] = area
+            areaResult = area / self.areaEscala
+            print('areaIlhota: ', area)
+            if circularidade:
+                self.circularidade["text"] = 'Sim'
+            else:
+                self.circularidade["text"] = 'Não'
+            self.areaIlhota["text"] = ("%.2f" % areaResult)
             self.caminho['text'] = self.filename
             root.update()
             image = cv2.resize(image, dsize=(550, 500), interpolation=cv2.INTER_CUBIC)

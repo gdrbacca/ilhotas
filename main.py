@@ -30,12 +30,19 @@ class Main:
     def medeScala(self, imagem):
         img = imagem
         h, w = img.shape[:2]
+        img = imutils.resize(img, width=666, height=500)
+        h, w = img.shape[:2]
+        #cv2.imshow('original', img)
+        #cv2.imwrite('fff.jpg', img)
         print(h, ' ', w)
         # crop_img = img[y:y+h, x:x+w]
-        crop_img = img[h - 40:h, w - 90:w]
+        crop_img = img[h - 50:h, w - 80:w]
         crop_img = cv2.cvtColor(crop_img, cv2.COLOR_BGR2GRAY, 1)
-        edges = cv2.Canny(crop_img, 100, 500, None, 3)
-        lines = cv2.HoughLinesP(edges, 1, np.pi / 180, 30, None, 20, 80)
+        ret, thresh = cv2.threshold(crop_img, 60, 255, cv2.THRESH_BINARY)
+        cv2.imshow('rr', thresh)
+        edges = cv2.Canny(thresh, 200, 500, None, 3)
+        cv2.imshow("canny", edges)
+        lines = cv2.HoughLinesP(edges, 1, np.pi / 180, 12, None, 15, 150)
         xis = []
         for line in lines:
             x1, y1, x2, y2 = line[0]
@@ -55,8 +62,6 @@ class Main:
             if i < menor:
                 menor = i
 
-        print('menor: ', menor)
-        print('maior: ', maior)
         subtracao = maior - menor
         area = subtracao * subtracao
         return area
@@ -152,7 +157,7 @@ class Main:
 
             contours[cont][i][0][0] += cX
             contours[cont][i][0][1] += cY
-            print(contours[cont][i][0][0], '  ', contours[cont][i][0][1])
+            #print(contours[cont][i][0][0], '  ', contours[cont][i][0][1])
 
 
 
@@ -254,9 +259,9 @@ class Main:
             #u.segundoProcesso(dst)
             self.contador = 1
             #imagem = self.processaImagem('', dst)
-            return dst
+            return area, dst
         elif caminho == '':
-            return imagem
+            return area, imagem
         else:
-            return []
+            return area, []
 #cv2.waitKey(0)

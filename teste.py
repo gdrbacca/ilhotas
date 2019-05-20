@@ -38,7 +38,7 @@ def create_graph(imfile, k=1., sigma=0.8, sz=1):
 
 
 
-img = cv2.imread('1.jpg')
+img = cv2.imread('imagensMarcadas/11.jpg')
 image = imutils.resize(img, width=666, height=500)
 h, w = image.shape[:2]
 cv2.imshow('original', image)

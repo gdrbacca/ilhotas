@@ -78,13 +78,13 @@ class Segment:
 
         # apply gamma correction using the lookup table
         return cv2.LUT(image, table)
-
-    def circularidade(self, contorno):
+#(4 * M_PI * metrics.area) / (metrics.perimeter * metrics.perimeter)
+    def circularidade(self, contorno, cont):
         perimeter = cv2.arcLength(contorno, True)
         area = cv2.contourArea(contorno)
         if perimeter == 0:
             return False
-        circularity = 4 * np.pi * (area / perimeter * perimeter)
+        circularity = 4 * np.pi * area / (perimeter * perimeter)
         print('Circularidade: ', circularity)
         if 0.8 < circularity < 1.2:
             return True
@@ -130,7 +130,7 @@ class Segment:
                 contorno_maior = cv2.contourArea(contours[i])
                 cont = i
 
-        circular = self.circularidade(contorno_maior)
+        circular = self.circularidade(contours, cont)
 
         cv2.drawContours(img, contours, cont, 255, 1)
 
@@ -162,7 +162,6 @@ class Segment:
         sub = img - copy_output
 
 
-        imagem = []
         label, imagem = seg.kmeans(sub)
 
 
@@ -173,24 +172,31 @@ class Segment:
         kernel2 = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (3, 3))
         dilat = cv2.dilate(erode, kernel2, iterations=8)
         cv2.imshow('dilat', dilat)
+
         im2, contours, hierarchy = cv2.findContours(dilat, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
         contorno_maior = 0;
         cont = 0;
         for i in range(0, len(contours)):
-            print(i, ' : ', len(contours[i]))
+            #print(i, ' : ', len(contours[i]))
             if cv2.contourArea(contours[i]) > contorno_maior:
                 contorno_maior = cv2.contourArea(contours[i])
                 cont = i
 
+        hull = cv2.convexHull(contours[cont], False)
+        circular = self.circularidade(hull, cont)
+
         #img = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
+        cv2.drawContours(imagem, [hull], -1, (255, 255, 255), 3)
+        cv2.imshow('hulk', imagem)
+
         cv2.drawContours(img, contours, cont, (255, 255, 255), 3)
         img = imutils.resize(img, width=666, height=500)
         cv2.imshow('g', g)
         cv2.imshow('orig', img)
         cv2.imshow('thresh', thresh2)
         cv2.imshow('gray', invert2)
-        cv2.imshow('kmeans', imagem)
+        #cv2.imshow('kmeans', imagem)
         plt.tight_layout()
-        return contorno_maior, contours, cont, img
+        return circular, contorno_maior, contours, cont, img
         #cv2.waitKey(0)
         ##################testar slic com canal preto e branco
