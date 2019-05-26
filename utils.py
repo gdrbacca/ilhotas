@@ -134,10 +134,10 @@ class Segment:
 
         cv2.drawContours(img, contours, cont, 255, 1)
 
-        cv2.imshow('g', g)
-        cv2.imshow('orig', img)
-        cv2.imshow('thresh', thresh2)
-        cv2.imshow('gray', invert2)
+        #cv2.imshow('g', g)
+        #cv2.imshow('orig', img)
+        #cv2.imshow('thresh', thresh2)
+        #cv2.imshow('gray', invert2)
         cv2.imshow('kmeans', imagem)
         plt.tight_layout()
         return img
@@ -196,6 +196,8 @@ class Segment:
         cv2.imshow('thresh', thresh2)
         cv2.imshow('gray', invert2)
         #cv2.imshow('kmeans', imagem)
+        perimetro = cv2.arcLength(contours[cont], True)
+        print('Perimetro: ', perimetro)
         plt.tight_layout()
         return circular, contorno_maior, contours, cont, img
         #cv2.waitKey(0)

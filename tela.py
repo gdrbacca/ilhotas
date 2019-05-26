@@ -37,44 +37,44 @@ class Application:
         self.image1 = Image.open("no-image.png")
         self.image2 = ImageTk.PhotoImage(self.image1)
         self.img = Label(self.widget2, image=self.image2)
-        self.img.grid(row=0, column=0)
+        self.img.grid(row=0, column=0, rowspan=2)
 
         self.widget3 = Frame(self.widget2)
-        self.widget3.grid(row=0, column=1, padx=10)
+        self.widget3.grid(row=0, column=1)
         self.a = Button(self.widget3)
         self.a["text"] = "Primeira limiar"
         self.a["font"] = ("Verdana", "10")
         self.a["width"] = 12
         self.a["command"] = self.processamento
-        self.a.grid(row=3, column=0, columnspan=3)
+        self.a.grid(row=3, column=1, sticky=W+E)
 
         self.buttonThresh1a = Button(self.widget3)
-        self.buttonThresh1a["text"] = "+"
+        self.buttonThresh1a["text"] = "-"
         self.buttonThresh1a["width"] = 5
-        self.buttonThresh1a["command"] = self.maisThresh1
+        self.buttonThresh1a["command"] = self.diminuiThresh1
         self.buttonThresh1a.grid(row=0, column=0)
         self.info1 = Label(self.widget3)
         self.info1["text"] = self.thresh1
         self.info1["width"] = 10
         self.info1.grid(row=0, column=1)
         self.buttonThresh1b = Button(self.widget3)
-        self.buttonThresh1b["text"] = "-"
+        self.buttonThresh1b["text"] = "+"
         self.buttonThresh1b["width"] = 5
-        self.buttonThresh1b["command"] = self.diminuiThresh1
+        self.buttonThresh1b["command"] = self.maisThresh1
         self.buttonThresh1b.grid(row=0, column=2)
         self.buttonThresh2a = Button(self.widget3)
-        self.buttonThresh2a["text"] = "+"
+        self.buttonThresh2a["text"] = "-"
         self.buttonThresh2a["width"] = 5
-        self.buttonThresh2a["command"] = self.maisThresh2
+        self.buttonThresh2a["command"] = self.diminuiThresh2
         self.buttonThresh2a.grid(row=1, column=0)
         self.info2 = Label(self.widget3)
         self.info2["text"] = self.thresh2
         self.info2["width"] = 10
         self.info2.grid(row=1, column=1)
         self.buttonThresh2b = Button(self.widget3)
-        self.buttonThresh2b["text"] = "-"
+        self.buttonThresh2b["text"] = "+"
         self.buttonThresh2b["width"] = 5
-        self.buttonThresh2b["command"] = self.diminuiThresh2
+        self.buttonThresh2b["command"] = self.maisThresh2
         self.buttonThresh2b.grid(row=1, column=2)
 
         self.espaco = Label(self.widget3)
@@ -86,40 +86,50 @@ class Application:
         self.b["width"] = 12
         self.b['state'] = 'disabled'
         self.b["command"] = self.processamento2
-        self.b.grid(row=6, column=0, columnspan=3)
+        self.b.grid(row=6, column=1)
         self.buttonThresh3a = Button(self.widget3)
-        self.buttonThresh3a["text"] = "+"
+        self.buttonThresh3a["text"] = "-"
         self.buttonThresh3a["width"] = 5
-        self.buttonThresh3a["command"] = self.maisThresh3
+        self.buttonThresh3a["command"] = self.diminuiThresh3
         self.buttonThresh3a["state"] = 'disabled'
         self.buttonThresh3a.grid(row=5, column=0)
         self.info3 = Label(self.widget3)
         self.info3["text"] = self.thresh3
-        self.info3["width"] = 10
+        self.info3["width"] = 12
         self.info3.grid(row=5, column=1)
         self.buttonThresh3b = Button(self.widget3)
-        self.buttonThresh3b["text"] = "-"
+        self.buttonThresh3b["text"] = "+"
         self.buttonThresh3b["width"] = 5
-        self.buttonThresh3b["command"] = self.diminuiThresh3
+        self.buttonThresh3b["command"] = self.maisThresh3
         self.buttonThresh3b["state"] = 'disabled'
         self.buttonThresh3b.grid(row=5, column=2)
 
-        self.areaIlhotaText = Label(self.widget3)
+        self.widget4 = Frame(self.widget2)
+        self.widget4.grid(row=1, column=1, sticky=N)
+        self.areaIlhotaText = Label(self.widget4)
         self.areaIlhotaText["text"] = 'Área: '
         self.areaIlhotaText["width"] = 10
-        self.areaIlhotaText.grid(row=7, column=0, pady=20)
-        self.areaIlhota = Label(self.widget3)
-        self.areaIlhota["text"] = ''
+        self.areaIlhotaText.grid(row=0, column=0)
+        self.areaIlhota = Label(self.widget4)
+        self.areaIlhota["text"] = self.areaEscala
         self.areaIlhota["width"] = 10
-        self.areaIlhota.grid(row=7, column=1, columnspan=3, pady=20)
-        self.circularidadeText = Label(self.widget3)
+        self.areaIlhota.grid(row=0, column=1, columnspan=2, pady=10)
+        self.circularidadeText = Label(self.widget4)
         self.circularidadeText["text"] = 'Circular: '
         self.circularidadeText["width"] = 10
-        self.circularidadeText.grid(row=8, column=0, pady=20)
-        self.circularidade = Label(self.widget3)
-        self.circularidade["text"] = ''
+        self.circularidadeText.grid(row=1, column=0)
+        self.circularidade = Label(self.widget4)
+        self.circularidade["text"] = self.areaEscala
         self.circularidade["width"] = 10
-        self.circularidade.grid(row=8, column=1, columnspan=3, pady=20)
+        self.circularidade.grid(row=1, column=1, columnspan=2, pady=10)
+        self.perimetroText = Label(self.widget4)
+        self.perimetroText["text"] = 'Perímetro: '
+        self.perimetroText["width"] = 10
+        self.perimetroText.grid(row=2, column=0)
+        self.perimetro = Label(self.widget4)
+        self.perimetro["text"] = self.areaEscala
+        self.perimetro["width"] = 10
+        self.perimetro.grid(row=2, column=1, columnspan=2, pady=10)
 
     def diminuiThresh1(self):
         self.thresh1 -= 5
@@ -199,10 +209,16 @@ class Application:
             root.update()
             image = cv2.resize(image, dsize=(550, 500), interpolation=cv2.INTER_CUBIC)
             imagem = Image.fromarray(image)
-            imagem = ImageTk.PhotoImage(imagem)
-            cv2.imwrite('results/im6.jpg', image)
-            self.img.configure(image=imagem)
-            self.img.image = imagem
+            ima = imagem
+            basewidth = 300
+            wpercent = (basewidth / float(ima.size[0]))
+            hesi = int(float(ima.size[1]) * float(wpercent))
+            ima = ima.resize((basewidth, hesi), Image.ANTIALIAS)
+            #ima.save('resized.jpg')
+            #cv2.imwrite('results/im6.jpg', image)
+            imagem1 = ImageTk.PhotoImage(ima)
+            self.img.configure(image=imagem1)
+            self.img.image = imagem1
             print('proc2')
 
     def abrirImagem(self):

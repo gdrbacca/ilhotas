@@ -63,6 +63,7 @@ class Main:
                 menor = i
 
         subtracao = maior - menor
+        print('subtracao: ', subtracao)
         area = subtracao * subtracao
         return area
 
@@ -97,13 +98,13 @@ class Main:
 
         r, g, b = cv2.split(imagem)
         h,s,v = cv2.split(imgray)
-        cv2.imshow('gray', cv2.equalizeHist(g))
+        #cv2.imshow('gray', cv2.equalizeHist(g))
 
 
         invert1 = cv2.bitwise_not(h)
         ret, thresh1 = cv2.threshold(cv2.equalizeHist(g), threshValue1, 255, cv2.THRESH_BINARY)####240############################
         #ret, thresh1 = cv2.threshold(invert1, 220, 255, cv2.THRESH_BINARY)
-        cv2.imshow("dd1",  thresh1)
+        #cv2.imshow("dd1",  thresh1)
         height, width = imagem.shape[:2]
 
         if caminho == "":
@@ -178,7 +179,7 @@ class Main:
         shift = cv2.pyrMeanShiftFiltering(invert2, 21, 61)
 
 
-        cv2.imshow("cut", dst)
+        #cv2.imshow("cut", dst)
 
         height, width = dst.shape[:2]
         ret, thresh1 = cv2.threshold(shift, 125, 255, cv2.THRESH_BINARY)
