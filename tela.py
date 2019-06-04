@@ -205,12 +205,13 @@ class Application:
             else:
                 self.circularidade["text"] = 'Não'
             self.areaIlhota["text"] = ("%.2f" % areaResult)
+            self.perimetro["text"] = ("%.2f" % cv2.arcLength(contours[cont], True))
             self.caminho['text'] = self.filename
             root.update()
             image = cv2.resize(image, dsize=(550, 500), interpolation=cv2.INTER_CUBIC)
             imagem = Image.fromarray(image)
             ima = imagem
-            basewidth = 300
+            basewidth = 600
             wpercent = (basewidth / float(ima.size[0]))
             hesi = int(float(ima.size[1]) * float(wpercent))
             ima = ima.resize((basewidth, hesi), Image.ANTIALIAS)
@@ -233,6 +234,8 @@ class Application:
         self.filename = tkfilebrowser.askopenfilename()
         self.a['state'] = 'normal'
         self.b['state'] = 'disabled'
+        self.buttonThresh3a['state'] = 'disabled'
+        self.buttonThresh3b['state'] = 'disabled'
         if self.filename != "":
             self.processamento()
 

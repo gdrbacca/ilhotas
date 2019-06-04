@@ -42,6 +42,7 @@ class Main:
         cv2.imshow('rr', thresh)
         edges = cv2.Canny(thresh, 200, 500, None, 3)
         cv2.imshow("canny", edges)
+        cv2.imwrite('edges1.jpg', edges)
         lines = cv2.HoughLinesP(edges, 1, np.pi / 180, 12, None, 15, 150)
         xis = []
         for line in lines:
@@ -104,7 +105,8 @@ class Main:
         invert1 = cv2.bitwise_not(h)
         ret, thresh1 = cv2.threshold(cv2.equalizeHist(g), threshValue1, 255, cv2.THRESH_BINARY)####240############################
         #ret, thresh1 = cv2.threshold(invert1, 220, 255, cv2.THRESH_BINARY)
-        #cv2.imshow("dd1",  thresh1)
+        #cv2.imwrite('dd1.jpg', thresh1)
+        cv2.imshow("dd1",  thresh1)
         height, width = imagem.shape[:2]
 
         if caminho == "":
@@ -119,6 +121,7 @@ class Main:
         eq = cv2.equalizeHist(sub)
         filter = cv2.bilateralFilter(eq, 15, 25, 25)
         filter = cv2.cvtColor(filter, cv2.COLOR_GRAY2BGR)
+        #cv2.imwrite('dd.jpg', filter)
         cv2.imshow("dd", filter)
 
         #deixar só a area da ilhota separada, para depois cortar a area
@@ -126,6 +129,7 @@ class Main:
         erode = cv2.erode(filter, kernel2, iterations=2)
         dilat = cv2.dilate(erode, kernel2, iterations=1)
         ret, thresh1 = cv2.threshold(dilat, threshValue2, 255, cv2.THRESH_BINARY) ##############170####################185-230
+        cv2.imwrite('shift.jpg', dilat)
         cv2.imshow("shift1", dilat)
         kernel2 = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (2,2))
         erode = cv2.erode(thresh1, kernel2, iterations=6)
@@ -134,6 +138,7 @@ class Main:
 
         #pegar o contorno dessa area e depois expandi-lo
         plot_image = np.concatenate((dilat, thresh1), axis=1)
+        cv2.imwrite('dilat.jpg', dilat)
         cv2.imshow("im", plot_image)
         dilat = cv2.cvtColor(dilat, cv2.COLOR_BGR2GRAY)
         im2, contours, hierarchy = cv2.findContours(dilat, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
@@ -210,6 +215,7 @@ class Main:
         dilate = cv2.cvtColor(dilate, cv2.COLOR_BGR2GRAY, 1)
         im2, contours, hierarchy = cv2.findContours(dilate, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
         contorno_maior = 0
+        cv2.imwrite('dddCorte.jpg', dilate)
         cv2.imshow("ddd", dilate)
         cont = 0
         for i in range(0, len(contours)):
@@ -230,6 +236,7 @@ class Main:
 
         plot_image = np.concatenate((imagem, adjusted), axis=1)
         #cv2.imwrite("C:/Users/Moacir/Desktop/results/28.jpg", imagem)
+        cv2.imwrite('contornado.jpg', imagem)
         cv2.imshow('final', plot_image)
         print(cont)
         if self.contador < 1:
