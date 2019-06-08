@@ -42,7 +42,7 @@ class Application:
         self.widget3 = Frame(self.widget2)
         self.widget3.grid(row=0, column=1)
         self.a = Button(self.widget3)
-        self.a["text"] = "Primeira limiar"
+        self.a["text"] = "Primeiro limiar"
         self.a["font"] = ("Verdana", "10")
         self.a["width"] = 12
         self.a["command"] = self.processamento
@@ -81,7 +81,7 @@ class Application:
         self.espaco.grid(row=4, column=1)
 
         self.b = Button(self.widget3)
-        self.b["text"] = "Segunda limiar"
+        self.b["text"] = "Segundo limiar"
         self.b["font"] = ("Verdana", "10")
         self.b["width"] = 12
         self.b['state'] = 'disabled'
