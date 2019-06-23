@@ -38,12 +38,13 @@ class Main:
         # crop_img = img[y:y+h, x:x+w]
         crop_img = img[h - 50:h, w - 80:w]
         crop_img = cv2.cvtColor(crop_img, cv2.COLOR_BGR2GRAY, 1)
-        ret, thresh = cv2.threshold(crop_img, 60, 255, cv2.THRESH_BINARY)
-        cv2.imshow('rr', thresh)
+        ret, thresh = cv2.threshold(crop_img, 50, 255, cv2.THRESH_BINARY)
+        #cv2.imshow('rr', thresh)
         edges = cv2.Canny(thresh, 200, 500, None, 3)
         cv2.imshow("canny", edges)
         cv2.imwrite('edges1.jpg', edges)
         lines = cv2.HoughLinesP(edges, 1, np.pi / 180, 12, None, 15, 150)
+        print(lines)
         xis = []
         for line in lines:
             x1, y1, x2, y2 = line[0]
@@ -52,6 +53,8 @@ class Main:
                 cv2.line(crop_img, (x1, y1), (x2, y2), (255, 0, 0), 3)
                 xis.append(x1)
 
+        cv2.imshow("lines", crop_img)
+        cv2.imwrite("lines.jpg", crop_img)
         maior = xis[0]
         menor = xis[0]
 
@@ -122,7 +125,7 @@ class Main:
         filter = cv2.bilateralFilter(eq, 15, 25, 25)
         filter = cv2.cvtColor(filter, cv2.COLOR_GRAY2BGR)
         #cv2.imwrite('dd.jpg', filter)
-        cv2.imshow("dd", filter)
+        #cv2.imshow("dd", filter)
 
         #deixar só a area da ilhota separada, para depois cortar a area
         kernel2 = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (3,2))
@@ -138,8 +141,8 @@ class Main:
 
         #pegar o contorno dessa area e depois expandi-lo
         plot_image = np.concatenate((dilat, thresh1), axis=1)
-        cv2.imwrite('dilat.jpg', dilat)
-        cv2.imshow("im", plot_image)
+        #cv2.imwrite('dilat.jpg', dilat)
+        #cv2.imshow("im", plot_image)
         dilat = cv2.cvtColor(dilat, cv2.COLOR_BGR2GRAY)
         im2, contours, hierarchy = cv2.findContours(dilat, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
         contorno_maior = 0
@@ -199,7 +202,7 @@ class Main:
         dilate = cv2.dilate(erode, kernel2, iterations=7)
         invert1 = cv2.bitwise_not(dilate)
 
-        cv2.imshow("fdf", invert1)
+        #cv2.imshow("fdf", invert1)
         kernel2 = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (3,3))
         dilate = cv2.dilate(invert1, kernel2, iterations=2)
         kernel2 = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (3,3))
@@ -215,8 +218,8 @@ class Main:
         dilate = cv2.cvtColor(dilate, cv2.COLOR_BGR2GRAY, 1)
         im2, contours, hierarchy = cv2.findContours(dilate, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
         contorno_maior = 0
-        cv2.imwrite('dddCorte.jpg', dilate)
-        cv2.imshow("ddd", dilate)
+        #cv2.imwrite('dddCorte.jpg', dilate)
+        #cv2.imshow("ddd", dilate)
         cont = 0
         for i in range(0, len(contours)):
             if cv2.contourArea(contours[i]) > contorno_maior:

@@ -11,7 +11,7 @@ class Application:
 
     thresh1 = 240
     thresh2 = 160
-    thresh3 = 150
+    thresh3 = 140
     filename = ""
     areaEscala = 0
     primeiroThresh = False
@@ -81,7 +81,7 @@ class Application:
         self.espaco.grid(row=4, column=1)
 
         self.b = Button(self.widget3)
-        self.b["text"] = "Segundo limiar"
+        self.b["text"] = "Último limiar"
         self.b["font"] = ("Verdana", "10")
         self.b["width"] = 12
         self.b['state'] = 'disabled'
@@ -179,8 +179,13 @@ class Application:
             if img != []:
                 print(img.shape[0], ' ', img.shape[1])
                 img = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
-                image = Image.fromarray(img)
-                image = ImageTk.PhotoImage(image)
+                img = cv2.resize(img, dsize=(550, 500), interpolation=cv2.INTER_CUBIC)
+                ima = Image.fromarray(img)
+                basewidth = 600
+                wpercent = (basewidth / float(ima.size[0]))
+                hesi = int(float(ima.size[1]) * float(wpercent))
+                ima = ima.resize((basewidth, hesi), Image.ANTIALIAS)
+                image = ImageTk.PhotoImage(ima)
                 self.img.configure(image=image)
                 self.img.image = image
                 self.result1 = img
@@ -197,31 +202,34 @@ class Application:
             self.caminho['text'] = "Carregando..."
             root.update()
             circularidade, area, contours, cont, image = u.processaFinal(self.result1, self.thresh3)
-            size = 128, 128
-            areaResult = area / self.areaEscala
-            print('areaIlhota: ', area)
-            if circularidade:
-                self.circularidade["text"] = 'Sim'
+            if area != 0 and image != []:
+                size = 128, 128
+                areaResult = area / self.areaEscala
+                print('areaIlhota: ', area)
+                if circularidade:
+                    self.circularidade["text"] = 'Sim'
+                else:
+                    self.circularidade["text"] = 'Não'
+                self.areaIlhota["text"] = ("%.2f" % areaResult)
+                perimetro = cv2.arcLength(contours[cont], True) / self.areaEscala
+                self.perimetro["text"] = ("%.2f" % perimetro)
+                self.caminho['text'] = self.filename
+                root.update()
+                image = cv2.resize(image, dsize=(550, 500), interpolation=cv2.INTER_CUBIC)
+                imagem = Image.fromarray(image)
+                ima = imagem
+                basewidth = 600
+                wpercent = (basewidth / float(ima.size[0]))
+                hesi = int(float(ima.size[1]) * float(wpercent))
+                ima = ima.resize((basewidth, hesi), Image.ANTIALIAS)
+                #ima.save('resized.jpg')
+                #cv2.imwrite('results/im6.jpg', image)
+                imagem1 = ImageTk.PhotoImage(ima)
+                self.img.configure(image=imagem1)
+                self.img.image = imagem1
+                print('proc2')
             else:
-                self.circularidade["text"] = 'Não'
-            self.areaIlhota["text"] = ("%.2f" % areaResult)
-            self.perimetro["text"] = ("%.2f" % cv2.arcLength(contours[cont], True))
-            self.caminho['text'] = self.filename
-            root.update()
-            image = cv2.resize(image, dsize=(550, 500), interpolation=cv2.INTER_CUBIC)
-            imagem = Image.fromarray(image)
-            ima = imagem
-            basewidth = 600
-            wpercent = (basewidth / float(ima.size[0]))
-            hesi = int(float(ima.size[1]) * float(wpercent))
-            ima = ima.resize((basewidth, hesi), Image.ANTIALIAS)
-            #ima.save('resized.jpg')
-            #cv2.imwrite('results/im6.jpg', image)
-            imagem1 = ImageTk.PhotoImage(ima)
-            self.img.configure(image=imagem1)
-            self.img.image = imagem1
-            print('proc2')
-
+                self.caminho['text'] = self.filename
     def abrirImagem(self):
         #filename = tkfilebrowser.askopenfilename()
         #if filename != "":
@@ -234,8 +242,21 @@ class Application:
         self.filename = tkfilebrowser.askopenfilename()
         self.a['state'] = 'normal'
         self.b['state'] = 'disabled'
+        self.buttonThresh1a['state'] = 'normal'
+        self.buttonThresh1b['state'] = 'normal'
+        self.buttonThresh2a['state'] = 'normal'
+        self.buttonThresh2b['state'] = 'normal'
         self.buttonThresh3a['state'] = 'disabled'
         self.buttonThresh3b['state'] = 'disabled'
+        self.areaIlhota['text'] = 0
+        self.circularidade['text'] = 0
+        self.perimetro['text'] = 0
+        self.thresh1 = 240
+        self.thresh2 = 160
+        self.thresh3 = 140
+        self.info1["text"] = self.thresh1
+        self.info2["text"] = self.thresh2
+        self.info3["text"] = self.thresh3
         if self.filename != "":
             self.processamento()
 

@@ -174,31 +174,35 @@ class Segment:
         cv2.imshow('dilat', dilat)
 
         im2, contours, hierarchy = cv2.findContours(dilat, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
-        contorno_maior = 0;
-        cont = 0;
-        for i in range(0, len(contours)):
-            #print(i, ' : ', len(contours[i]))
-            if cv2.contourArea(contours[i]) > contorno_maior:
-                contorno_maior = cv2.contourArea(contours[i])
-                cont = i
+        if contours == []:
+            return 0, 0, [], 0, []
+        else:
+            contorno_maior = 0;
+            cont = 0;
+            for i in range(0, len(contours)):
+                #print(i, ' : ', len(contours[i]))
+                if cv2.contourArea(contours[i]) > contorno_maior:
+                    contorno_maior = cv2.contourArea(contours[i])
+                    cont = i
 
-        hull = cv2.convexHull(contours[cont], False)
-        circular = self.circularidade(hull, cont)
+            hull = cv2.convexHull(contours[cont], False)
+            circular = self.circularidade(hull, cont)
 
-        #img = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
-        cv2.drawContours(imagem, [hull], -1, (255, 255, 255), 3)
-        cv2.imshow('hulk', imagem)
+            #img = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
+            cv2.drawContours(imagem, [hull], -1, (255, 255, 255), 3)
+            cv2.imshow('hulk', imagem)
 
-        cv2.drawContours(img, contours, cont, (255, 255, 255), 3)
-        img = imutils.resize(img, width=666, height=500)
-        cv2.imshow('g', g)
-        cv2.imshow('orig', img)
-        cv2.imshow('thresh', thresh2)
-        cv2.imshow('gray', invert2)
-        #cv2.imshow('kmeans', imagem)
-        perimetro = cv2.arcLength(contours[cont], True)
-        print('Perimetro: ', perimetro)
-        plt.tight_layout()
-        return circular, contorno_maior, contours, cont, img
-        #cv2.waitKey(0)
+            cv2.drawContours(img, contours, cont, (255, 255, 255), 3)
+            img = imutils.resize(img, width=666, height=500)
+            cv2.imshow('g', g)
+            cv2.imshow('orig', img)
+            cv2.imshow('thresh', thresh2)
+            cv2.imshow('gray', invert2)
+            cv2.imwrite("finalzao.jpg", img)
+            #cv2.imshow('kmeans', imagem)
+            perimetro = cv2.arcLength(contours[cont], True)
+            print('Perimetro: ', perimetro)
+            plt.tight_layout()
+            return circular, contorno_maior, contours, cont, img
+            #cv2.waitKey(0)
         ##################testar slic com canal preto e branco
